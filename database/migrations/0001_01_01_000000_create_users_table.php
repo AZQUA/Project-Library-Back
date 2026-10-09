@@ -18,6 +18,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('phone_number');
+            $table->enum('status', ['allowed', 'provisional suspension', 'banned'])->default('allowed');
+            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->foreignId('library_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
 
