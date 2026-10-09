@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Work;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class WorkController extends Controller
@@ -22,15 +23,25 @@ class WorkController extends Controller
     public function store(Request $request)
     {
         $work = Work::create($request->all());
+        $work->types()->attach($request->types);
         return response($work);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Work $work)
+    public function showOne(string $id)
     {
-        return response($work);
+ 
+            $work = Work::with('types')->findOrFail($id);
+            return $work;
+
+    }
+
+    public function showAll(Request $request){
+        return [
+            "data"=> Work::with('types')->get()
+        ];
     }
 
     /**

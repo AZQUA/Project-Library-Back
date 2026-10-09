@@ -20,7 +20,7 @@ return new class extends Migration
             
         });
 
-        Schema::create('works_types', function (Blueprint $table) {
+        Schema::create('type_work', function (Blueprint $table) {
             $table->foreignId('type_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_id')->constrained()->onDelete('cascade');
             $table->timestamps();

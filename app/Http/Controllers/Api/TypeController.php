@@ -21,7 +21,7 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Type::create($request->all());
     }
 
     /**

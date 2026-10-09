@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('artist_name');
         });
 
-        Schema::create('authors_works', function (Blueprint $table) {
+        Schema::create('author_work', function (Blueprint $table) {
             $table->foreignId('author_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_id')->constrained()->onDelete('cascade');
             $table->timestamps();

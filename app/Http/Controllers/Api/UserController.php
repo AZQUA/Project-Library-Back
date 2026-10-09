@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -24,33 +25,33 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = User::create($request->all());
+        $token = $user->createToken('validation_token');
         return [
-            "data"=>$user
+            "data"=>[$user, $token]
         ];
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
-        return $user;
+        return [
+            'data'=>$request->user()
+        ];
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, string $id)
     {
-        $user->name = $request->json('name');
-        $user->email = $request->json('email');
-        $user->password = $request->json('password');
-        $user->password = $request->json('email_verified_at');
-        $user->password = $request->json('phone_number');
-        $user->password = $request->json('status');
-        $user->password = $request->json('role');
-        $user->password = $request->json('library_id');
-        $user->save();
+        $currentUser = $request->user();
+        $user = User::find($id);
+        if (!$user || $id != $currentUser->$id) {
+            throw new UnauthorizedException("Cet identifiant est inexistant ou vous n'avez pas les droits nécéssaire");
+        }
+        $user->update($request->all());
         return $user;
     }
 
@@ -60,6 +61,12 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         return $user->delete();
+    }
+
+    public function logout(Request $request){
+        return [
+            "data" => $request->user()->currentAccessToken()->delete()
+        ];
     }
 
     public function login(Request $request)
@@ -76,9 +83,18 @@ class UserController extends Controller
                 'email'=> ['The provided credentials are incorrect.'],
             ]);
         }
-        $token=$user->createToken("access_token");
+        $token=$user->createToken("access_token", ['*'], now()->plus(years: 1));
         return [
             "data"=>$token->plainTextToken
+        ];
+    }
+
+    public function validate(Request $request){
+        $request->user()->email_verified_at = now();
+        $request->user()->save();
+        $request->user()->currentAccessToken()->delete();
+        return [
+            "data"=>$request->user()
         ];
     }
 }
