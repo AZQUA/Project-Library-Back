@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkController;
@@ -18,5 +19,8 @@ Route::delete('/session', [UserController::class, 'logout'])->middleware('auth:s
 Route::get('/works', [WorkController::class, 'showAll'])->middleware('auth:sanctum');
 Route::post('/works', [WorkController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/works/{id}', [WorkController::class, 'showOne'])->middleware('auth:sanctum');
+Route::post('/works/{id}/reviews',[ReviewController::class, 'store'])->middleware('auth:sanctum');
+Route::patch('/works/{id}/reviews',[ReviewController::class, 'update'])->middleware('auth:sanctum');
+Route::delete('/works/{id}/reviews',[ReviewController::class, 'destroy'])->middleware('auth:sanctum');
 
 Route::post('/types', [TypeController::class, 'store'])->middleware('auth:sanctum');

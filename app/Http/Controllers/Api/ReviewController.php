@@ -19,9 +19,15 @@ class ReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(string $id, Request $request)
     {
-        //
+        $user = $request->user();
+        if (Review::where(''))
+        $data = $request->all();
+        $data['work_id'] = $id * 1;
+        $review = Review::make($data);
+        $review->update($request->json('user_id')->id);
+        $review->save();
     }
 
     /**
@@ -35,9 +41,12 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Review $review)
+    public function update(string $id, Request $request)
     {
-        //
+        $user = $request->user();
+        $review = Review::where('work_id', $id , 'and' , 'user_id', $user->id);
+        $review->update($request->all());
+        return $review;
     }
 
     /**
